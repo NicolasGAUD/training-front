@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { ProductCard } from '../product-card/product-card';
 import { Product } from '../models/product';
 import { catalog } from '../catalog';
@@ -12,10 +12,15 @@ import { catalog } from '../catalog';
 export class ProductList {
   products: Product[] = catalog;
   visibleProducts: Product[] = catalog;
-  readonly cartCount = signal(0);
+  readonly cart = input.required<Product[]>();
+  readonly addToCart = output<Product>();
 
-  onAddedToCart(): void {
-    this.cartCount.update((c) => c + 1);
+  onAddedToCart(product: Product): void {
+    this.addToCart.emit(product);
+  }
+
+  quantityOf(product: Product): number {
+    return this.cart().filter((item) => item.id === product.id).length;
   }
 
   showAll(): void {

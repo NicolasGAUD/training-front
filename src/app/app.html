@@ -1,5 +1,5 @@
-<app-header />
+<app-header [count]="cart.length" (clear)="onClear()" />
 <main>
-  <app-product-list />
+  <app-product-list [cart]="cart" (addToCart)="onAdd($event)" />
 </main>
 <router-outlet />

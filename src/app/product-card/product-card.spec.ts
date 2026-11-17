@@ -21,6 +21,7 @@ describe('ProductCard', () => {
 
     fixture = TestBed.createComponent(ProductCard);
     fixture.componentRef.setInput('product', product);
+    fixture.componentRef.setInput('quantity', 0);
     await fixture.whenStable();
   });
 
@@ -84,5 +85,11 @@ describe('ProductCard', () => {
     button.click();
 
     expect(emitted).toEqual([inStock]);
+  });
+
+  it('shows the quantity in the cart', async () => {
+    fixture.componentRef.setInput('quantity', 2);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Dans ton panier : 2');
   });
 });

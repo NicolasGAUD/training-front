@@ -10,6 +10,7 @@ import { Product } from '../models/product';
 })
 export class ProductCard {
   readonly product = input.required<Product>();
+  readonly quantity = input.required<number>();
   readonly addedToCart = output<Product>();
 
   addToCart(): void {

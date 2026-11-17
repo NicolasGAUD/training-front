@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from './header/header';
 import { ProductList } from './product-list/product-list';
+import { Product } from './models/product';
 
 @Component({
   imports: [Header, ProductList, RouterOutlet], // App utilise Header et ProductList (ProductCard est utilisé par ProductList)
@@ -10,5 +11,13 @@ import { ProductList } from './product-list/product-list';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('training-front');
+  cart: Product[] = [];
+
+  onAdd(product: Product): void {
+    this.cart = [...this.cart, product]; // un nouveau tableau : l'ancien + ce produit
+  }
+
+  onClear(): void {
+    this.cart = [];
+  }
 }
