@@ -13,6 +13,7 @@
       <span class="badge badge--out">Rupture</span>
     }
   }
+  <p>Dans ton panier : {{ quantity() }}</p>
   @if (product().stock === 0) {
     <p>Victime de son succès</p>
   } @else {

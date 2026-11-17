@@ -21,4 +21,21 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Training Shop');
   });
+
+  it('adds a product to the cart then clears it', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const el: HTMLElement = fixture.nativeElement;
+    const counter = el.querySelector('p[aria-live="polite"]');
+    expect(counter?.textContent).toContain('Panier : 0 article(s)');
+
+    el.querySelector<HTMLButtonElement>('app-product-card button:not([disabled])')?.click();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.cart.length).toBe(1);
+    expect(counter?.textContent).toContain('Panier : 1 article(s)');
+
+    el.querySelector<HTMLButtonElement>('app-header button')?.click();
+    await fixture.whenStable();
+    expect(counter?.textContent).toContain('Panier : 0 article(s)');
+  });
 });
