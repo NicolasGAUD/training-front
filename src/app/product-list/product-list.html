@@ -1,0 +1,16 @@
+<section class="product-list">
+  <h2>Nos produits</h2>
+  <p aria-live="polite">Panier : {{ cartCount() }} article(s)</p>
+  <div role="group" aria-label="Filtrer les produits">
+    <button type="button" (click)="showAll()">Tous</button>
+    <button type="button" (click)="showInStock()">Disponibles</button>
+    <button type="button" (click)="showLuxury()">Plus de 1 000 €</button>
+  </div>
+  <ul>
+    @for (product of visibleProducts; track product.id) {
+      <li><app-product-card [product]="product" (addedToCart)="onAddedToCart()" /></li>
+    } @empty {
+      <li>Aucun produit à afficher</li>
+    }
+  </ul>
+</section>
