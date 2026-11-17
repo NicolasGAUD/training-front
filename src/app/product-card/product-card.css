@@ -10,3 +10,23 @@
 .product-card img {
   width: 100%;
 }
+.badge {
+  display: inline-block;
+  margin: 4px 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge--ok {
+  background: #d1fae5;
+  color: #065f46;
+}
+.badge--low {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge--out {
+  background: #fee2e2;
+  color: #991b1b;
+}

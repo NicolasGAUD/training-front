@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { Product } from '../products';
+import { Product } from '../models/product';
 
 @Component({
   imports: [NgOptimizedImage],

@@ -2,13 +2,26 @@
   <img [ngSrc]="product().thumbnail" [alt]="product().title" width="156" height="156" />
   <h3>{{ product().title }}</h3>
   <p>{{ product().price }} €</p>
-  <p>{{ product().availabilityStatus }}</p>
-  <button
-    type="button"
-    (click)="addToCart()"
-    [disabled]="product().stock === 0"
-    [attr.aria-label]="'Ajouter ' + product().title + ' au panier'"
-  >
-    Ajouter au panier
-  </button>
+  @switch (product().availabilityStatus) {
+    @case ('In Stock') {
+      <span class="badge badge--ok">En stock</span>
+    }
+    @case ('Low Stock') {
+      <span class="badge badge--low">Plus que {{ product().stock }}</span>
+    }
+    @default {
+      <span class="badge badge--out">Rupture</span>
+    }
+  }
+  @if (product().stock === 0) {
+    <p>Victime de son succès</p>
+  } @else {
+    <button
+      type="button"
+      (click)="addToCart()"
+      [attr.aria-label]="'Ajouter ' + product().title + ' au panier'"
+    >
+      Ajouter au panier
+    </button>
+  }
 </article>

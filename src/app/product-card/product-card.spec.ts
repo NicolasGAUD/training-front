@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductCard } from './product-card';
-import { Product } from '../products';
+import { Product } from '../models/product';
 
 const product: Product = {
   id: 1,
@@ -28,20 +28,47 @@ describe('ProductCard', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('renders the product title and an accessible button', () => {
+  it('renders the product title and an accessible button', async () => {
+    fixture.componentRef.setInput('product', { ...product, stock: 5, availabilityStatus: 'In Stock' });
+    await fixture.whenStable();
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('h3')?.textContent).toContain('Volleyball');
     expect(el.querySelector('button')?.getAttribute('aria-label')).toBe('Ajouter Volleyball au panier');
   });
 
-  it('shows the availability status', () => {
-    const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Out of Stock');
+  it('shows "En stock" for In Stock', async () => {
+    fixture.componentRef.setInput('product', { ...product, stock: 20, availabilityStatus: 'In Stock' });
+    await fixture.whenStable();
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.badge');
+    expect(badge.textContent?.trim()).toBe('En stock');
   });
 
-  it('disables the button when stock is 0', () => {
-    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    expect(button.disabled).toBe(true);
+  it('shows "Plus que 4" for Low Stock', async () => {
+    fixture.componentRef.setInput('product', { ...product, stock: 4, availabilityStatus: 'Low Stock' });
+    await fixture.whenStable();
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.badge');
+    expect(badge.textContent?.trim()).toBe('Plus que 4');
+  });
+
+  it('shows "Rupture" for Out of Stock', async () => {
+    fixture.componentRef.setInput('product', { ...product, stock: 0, availabilityStatus: 'Out of Stock' });
+    await fixture.whenStable();
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.badge');
+    expect(badge.textContent?.trim()).toBe('Rupture');
+  });
+
+  it('renders no button and shows the sold-out message when stock is 0', () => {
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('button')).toBeNull();
+    expect(el.textContent).toContain('Victime de son succès');
+  });
+
+  it('renders the button and no sold-out message when stock is above 0', async () => {
+    fixture.componentRef.setInput('product', { ...product, stock: 5, availabilityStatus: 'In Stock' });
+    await fixture.whenStable();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('button')).not.toBeNull();
+    expect(el.textContent).not.toContain('Victime de son succès');
   });
 
   it('emits addedToCart with the product when the button is clicked', async () => {
