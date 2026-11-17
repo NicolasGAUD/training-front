@@ -9,7 +9,8 @@ import { catalog, Product } from '../products';
   templateUrl: './product-list.html',
 })
 export class ProductList {
-  readonly products = signal<Product[]>(catalog);
+  products: Product[] = catalog;
+  visibleProducts: Product[] = catalog;
   readonly cartCount = signal(0);
 
   onAddedToCart(): void {
