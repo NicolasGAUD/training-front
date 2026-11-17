@@ -16,4 +16,16 @@ export class ProductList {
   onAddedToCart(): void {
     this.cartCount.update((c) => c + 1);
   }
+
+  showAll(): void {
+    this.visibleProducts = this.products;
+  }
+
+  showInStock(): void {
+    this.visibleProducts = this.products.filter((product) => product.stock > 0);
+  }
+
+  showLuxury(): void {
+    this.visibleProducts = this.products.filter((product) => product.price > 1000);
+  }
 }
