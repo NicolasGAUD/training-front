@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ProductCard } from '../product-card/product-card';
-import { catalog, Product } from '../products';
+import { Product } from '../models/product';
+import { catalog } from '../catalog';
 
 @Component({
   imports: [ProductCard],
