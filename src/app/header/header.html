@@ -1,6 +1,6 @@
 <header class="header">
   <h1>Training Shop</h1>
   <p>Le catalogue d'entraînement</p>
-  <!-- dans src/app/header/header.html -->
-  <button (click)="clear.emit()">Vider le panier</button>
+  <p aria-live="polite">Panier : {{ count() }} article(s)</p>
+  <button type="button" (click)="clear.emit()">Vider le panier</button>
 </header>

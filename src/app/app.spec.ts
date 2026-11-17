@@ -22,11 +22,18 @@ describe('App', () => {
     expect(compiled.querySelector('h1')?.textContent).toContain('Training Shop');
   });
 
+  it('renders the product list inside main', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('main app-product-list')).not.toBeNull();
+  });
+
   it('adds a product to the cart then clears it', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el: HTMLElement = fixture.nativeElement;
-    const counter = el.querySelector('p[aria-live="polite"]');
+    const counter = el.querySelector('app-header p[aria-live="polite"]');
     expect(counter?.textContent).toContain('Panier : 0 article(s)');
 
     el.querySelector<HTMLButtonElement>('app-product-card button:not([disabled])')?.click();

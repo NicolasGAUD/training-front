@@ -12,10 +12,25 @@ describe('Header', () => {
 
     fixture = TestBed.createComponent(Header);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('count', 0);
     await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('displays the cart count', async () => {
+    fixture.componentRef.setInput('count', 3);
+    await fixture.whenStable();
+    const counter = (fixture.nativeElement as HTMLElement).querySelector('p[aria-live="polite"]');
+    expect(counter?.textContent).toContain('Panier : 3 article(s)');
+  });
+
+  it('emits clear when the button is clicked', () => {
+    let emitted = 0;
+    component.clear.subscribe(() => emitted++);
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button')?.click();
+    expect(emitted).toBe(1);
   });
 });

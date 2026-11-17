@@ -39,13 +39,6 @@ describe('ProductList', () => {
     expect(emitted).toEqual([firstInStock as Product]);
   });
 
-  it('shows the cart length in the counter', async () => {
-    fixture.componentRef.setInput('cart', [catalog[0], catalog[1], catalog[0]]);
-    await fixture.whenStable();
-    const counter = (fixture.nativeElement as HTMLElement).querySelector('p[aria-live="polite"]');
-    expect(counter?.textContent).toContain('Panier : 3 article(s)');
-  });
-
   it('passes the quantity in the cart to each card', async () => {
     fixture.componentRef.setInput('cart', [catalog[0], catalog[0]]);
     await fixture.whenStable();
