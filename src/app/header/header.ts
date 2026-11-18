@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { Product } from '../models/product';
 
 @Component({
@@ -16,4 +16,7 @@ export class Header {
       this.shipping.set('Livraison offerte'); // nouvelle valeur : les composants qui l'affichent sont prévenus
     }, 2000);
   }
+
+  count = computed(() => this.cart().length); // se recalcule quand cart change
+  total = computed(() => this.cart().reduce((sum, product) => sum + product.price, 0));
 }
