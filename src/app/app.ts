@@ -11,13 +11,13 @@ import { Product } from './models/product';
   templateUrl: './app.html',
 })
 export class App {
-  cart: Product[] = [];
+  readonly cart = signal<Product[]>([]);
 
   onAdd(product: Product): void {
-    this.cart = [...this.cart, product]; // un nouveau tableau : l'ancien + ce produit
+    this.cart.update((cart) => [...cart, product]); // un nouveau tableau : l'ancien + ce produit
   }
 
   onClear(): void {
-    this.cart = [];
+    this.cart.set([]);
   }
 }
