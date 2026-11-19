@@ -13,13 +13,12 @@
     <ul>
       @for (product of visibleProducts(); track product.id) {
         <li>
-          <app-product-card
-            [product]="product"
-            [quantity]="quantityOf(product)"
-            [priority]="$first"
-            (addedToCart)="onAddedToCart($event)"
-          />
-          <a [routerLink]="['/products', product.id]">Voir le détail de {{ product.title }}</a>
+            <app-product-card
+              [product]="product"
+              [quantity]="quantityOf(product)"
+              [priority]="$first"
+              (addedToCart)="onAddedToCart($event)"
+            />
         </li>
       } @empty {
         <li>Aucun produit à afficher</li>

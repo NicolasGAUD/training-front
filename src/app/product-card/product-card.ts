@@ -1,9 +1,10 @@
 import { NgOptimizedImage } from '@angular/common';
 import { booleanAttribute, Component, input, output } from '@angular/core';
 import { Product } from '../models/product';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, RouterLink],
   selector: 'app-product-card',
   styleUrl: './product-card.css',
   templateUrl: './product-card.html',

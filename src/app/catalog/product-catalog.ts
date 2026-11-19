@@ -1,5 +1,5 @@
 import { HttpClient, httpResource, HttpResourceRef } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { NewProduct, Product } from '../models/product';
 import {
@@ -15,12 +15,24 @@ import {
 export class ProductCatalog {
   private readonly http = inject(HttpClient);
 
-  /** Liste des produits : value(), isLoading(), error(). */
+  private readonly listRequested = signal(false);
+
+  /**
+   * Liste des produits : value(), isLoading(), error().
+   * Inactive (aucune requête) tant que loadProducts() n'a pas été appelée.
+   */
   readonly products: HttpResourceRef<Product[] | undefined> = httpResource(
     () =>
-      `${DUMMYJSON_BASE_URL}/products?limit=${PRODUCTS_LIMIT}&select=${PRODUCT_FIELDS.join(',')}`,
+      this.listRequested()
+        ? `${DUMMYJSON_BASE_URL}/products?limit=${PRODUCTS_LIMIT}&select=${PRODUCT_FIELDS.join(',')}`
+        : undefined,
     { parse: parseProductList },
   );
+
+  /** Déclenche le chargement de la liste. Idempotent : la liste reste en cache dans le singleton. */
+  loadProducts(): void {
+    this.listRequested.set(true);
+  }
 
   /**
    * Ajoute un produit (simulé par DummyJSON : un id est renvoyé, rien n'est enregistré).
