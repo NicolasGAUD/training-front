@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductDetail } from './product-detail';
-import { dummyJsonListBody, testProducts } from '../testing/products';
+import { testProducts } from '../testing/products';
 
 describe('ProductDetail', () => {
   let component: ProductDetail;
@@ -23,10 +23,6 @@ describe('ProductDetail', () => {
     fixture.componentRef.setInput('id', '1');
     component = fixture.componentInstance;
     fixture.detectChanges();
-    // ProductCatalog charge aussi la liste à son instanciation : on la sert ici.
-    http
-      .expectOne((req) => req.url.startsWith('https://dummyjson.com/products?'))
-      .flush(dummyJsonListBody());
   });
 
   afterEach(() => http.verify());
@@ -34,6 +30,11 @@ describe('ProductDetail', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     detailRequest();
+  });
+
+  it('does not download the product list', () => {
+    detailRequest();
+    http.expectNone((req) => req.url.includes('/products?limit'));
   });
 
   it('shows a loading status while the request is pending', () => {

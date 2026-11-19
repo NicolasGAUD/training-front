@@ -19,7 +19,26 @@ describe('ProductCatalog', () => {
 
   afterEach(() => http.verify());
 
+  const isListRequest = (r: { url: string }): boolean =>
+    r.url.startsWith('https://dummyjson.com/products?');
+
+  it('does not request the list when the service is only injected', () => {
+    TestBed.tick();
+    http.expectNone(isListRequest);
+    expect(catalog.products.isLoading()).toBe(false);
+    expect(catalog.products.value()).toBeUndefined();
+  });
+
+  it('requests the list once, even if loadProducts() is called twice', () => {
+    catalog.loadProducts();
+    TestBed.tick();
+    catalog.loadProducts();
+    TestBed.tick();
+    http.expectOne(isListRequest);
+  });
+
   it('loads the product list from DummyJSON', async () => {
+    catalog.loadProducts();
     TestBed.tick();
     const req = http.expectOne((r) => r.url.startsWith('https://dummyjson.com/products?'));
     expect(req.request.method).toBe('GET');
@@ -34,6 +53,7 @@ describe('ProductCatalog', () => {
   });
 
   it('exposes an error when the list response is invalid', async () => {
+    catalog.loadProducts();
     TestBed.tick();
     http
       .expectOne((r) => r.url.startsWith('https://dummyjson.com/products?'))
@@ -49,8 +69,7 @@ describe('ProductCatalog', () => {
       catalog.productById(() => id()),
     );
     TestBed.tick();
-    // la liste est aussi demandée par le service : on l'ignore ici
-    http.expectOne((r) => r.url.startsWith('https://dummyjson.com/products?')).flush(dummyJsonListBody());
+    http.expectNone(isListRequest);
     http.expectOne('https://dummyjson.com/products/15').flush(testProducts[1]);
     await TestBed.inject(ApplicationRef).whenStable();
 
@@ -62,10 +81,10 @@ describe('ProductCatalog', () => {
       catalog.productById(() => undefined),
     );
     TestBed.tick();
-    http.expectOne((r) => r.url.startsWith('https://dummyjson.com/products?')).flush(dummyJsonListBody());
     await TestBed.inject(ApplicationRef).whenStable();
 
     expect(resource.value()).toBeUndefined();
+    http.expectNone(isListRequest);
     http.expectNone((r) => /\/products\/[^?]/.test(r.url));
   });
 
@@ -74,7 +93,6 @@ describe('ProductCatalog', () => {
       catalog.productById(() => '9999'),
     );
     TestBed.tick();
-    http.expectOne((r) => r.url.startsWith('https://dummyjson.com/products?')).flush(dummyJsonListBody());
     http
       .expectOne('https://dummyjson.com/products/9999')
       .flush({ message: 'nf' }, { status: 404, statusText: 'Not Found' });

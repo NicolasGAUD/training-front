@@ -5,7 +5,6 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { Auth } from '../auth/auth';
 import { routes } from '../app.routes';
-import { dummyJsonListBody } from '../testing/products';
 import { ProductForm } from './product-form';
 
 const ADD_URL = 'https://dummyjson.com/products/add';
@@ -25,7 +24,6 @@ describe('ProductForm', () => {
     await harness.navigateByUrl('/products/new');
     el = harness.routeNativeElement as HTMLElement;
     TestBed.tick();
-    drainList();
   };
 
   const field = <T extends HTMLElement>(id: string): T => el.querySelector<T>(`#${id}`) as T;
@@ -58,16 +56,11 @@ describe('ProductForm', () => {
   const errorText =(id: string): string | null =>
     el.querySelector(`#${id}-error`)?.textContent?.trim() ?? null;
 
-  // ProductCatalog charge aussi la liste à son instanciation : on la sert pour isoler le POST.
-  const drainList = (): void => {
-    http
-      .match((r) => r.url.startsWith('https://dummyjson.com/products?'))
-      .forEach((r) => r.flush(dummyJsonListBody()));
-  };
+  afterEach(() => http.verify());
 
-  afterEach(() => {
-    drainList();
-    http.verify();
+  it('does not download the product list', async () => {
+    await setup();
+    http.expectNone((r) => r.url.includes('/products?limit'));
   });
 
   it('has a label, aria-required and a category select for each field', async () => {

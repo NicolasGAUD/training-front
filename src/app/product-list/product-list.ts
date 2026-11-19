@@ -3,12 +3,11 @@ import { CartService } from '../cart.service';
 import { ProductCatalog } from '../catalog/product-catalog';
 import { ProductCard } from '../product-card/product-card';
 import { Product } from '../models/product';
-import { RouterLink } from '@angular/router';
 
 type Filter = 'all' | 'inStock' | 'luxury';
 
 @Component({
-  imports: [ProductCard, RouterLink],
+  imports: [ProductCard],
   selector: 'app-product-list',
   styleUrl: './product-list.css',
   templateUrl: './product-list.html',
@@ -33,6 +32,10 @@ export class ProductList {
         return this.products();
     }
   });
+
+  constructor() {
+    this.catalog.loadProducts();
+  }
 
   onAddedToCart(product: Product): void {
     this.cart.add(product);
