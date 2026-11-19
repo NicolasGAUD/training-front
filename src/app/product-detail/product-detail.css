@@ -5,4 +5,6 @@
 }
 .product-detail img {
   width: 160px;
+  height: auto;
+  align-self: flex-start;
 }

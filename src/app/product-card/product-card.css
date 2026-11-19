@@ -9,6 +9,7 @@
 }
 .product-card img {
   width: 100%;
+  height: auto;
 }
 .badge {
   display: inline-block;

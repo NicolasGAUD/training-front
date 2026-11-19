@@ -81,6 +81,17 @@ describe('ProductCard', () => {
     expect(emitted).toEqual([inStock]);
   });
 
+  it('marks the image as high priority only when priority is true', async () => {
+    const img = (): HTMLImageElement => fixture.nativeElement.querySelector('img');
+    expect(img().getAttribute('fetchpriority')).toBe('auto');
+    expect(img().getAttribute('loading')).toBe('lazy');
+
+    fixture.componentRef.setInput('priority', true);
+    await fixture.whenStable();
+    expect(img().getAttribute('fetchpriority')).toBe('high');
+    expect(img().getAttribute('loading')).toBe('eager');
+  });
+
   it('shows the quantity in the cart', async () => {
     fixture.componentRef.setInput('quantity', 2);
     await fixture.whenStable();

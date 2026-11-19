@@ -63,6 +63,15 @@ describe('ProductList', () => {
     expect(el().querySelector('[role="status"]')).toBeNull();
   });
 
+  it('gives priority only to the first card image', async () => {
+    await loadProducts();
+    const images = Array.from(el().querySelectorAll('app-product-card img'));
+    expect(images.length).toBeGreaterThan(1);
+    images.forEach((img, index) => {
+      expect(img.getAttribute('fetchpriority')).toBe(index === 0 ? 'high' : 'auto');
+    });
+  });
+
   it('adds the product to the cart when an enabled add button is clicked', async () => {
     await loadProducts();
     const button = el().querySelector<HTMLButtonElement>('app-product-card button:not([disabled])');
