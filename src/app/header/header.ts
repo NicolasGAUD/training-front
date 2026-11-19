@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Cart } from '../cart/cart';
 import { Auth } from '../auth/auth';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CartService } from '../cart.service';
 
 @Component({
   imports: [RouterLink, RouterLinkActive],
@@ -12,6 +13,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 export class Header {
   private readonly cart = inject(Cart);
   protected readonly auth = inject(Auth);
+  cartService = new CartService();
   shipping = signal('Calcul des frais de port…'); // un signal, avec sa valeur de départ
   constructor() {
     setTimeout(() => {

@@ -2,7 +2,7 @@
   <p role="status">Chargement du produit…</p>
 } @else if (product(); as p) {
   <div class="product-detail">
-    <img [ngSrc]="p.thumbnail" [alt]="p.title" width="160" height="160" />
+    <img [ngSrc]="p.thumbnail" [alt]="p.title" width="160" height="160" priority />
     <div>
       <h2>{{ p.title }}</h2>
       <p>{{ p.price }} €</p>

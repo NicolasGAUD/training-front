@@ -1,5 +1,10 @@
 <article class="product-card">
-  <img [ngSrc]="product().thumbnail" [alt]="product().title" width="300" height="300" />
+  <!-- NgOptimizedImage ne réagit pas à un changement de priority après init (NG02953) : l'@if recrée l'image -->
+  @if (priority()) {
+    <img [ngSrc]="product().thumbnail" [alt]="product().title" width="300" height="300" priority />
+  } @else {
+    <img [ngSrc]="product().thumbnail" [alt]="product().title" width="300" height="300" />
+  }
   <h3>{{ product().title }}</h3>
   <p>{{ product().price }} €</p>
   @switch (product().availabilityStatus) {
