@@ -3,9 +3,10 @@ import { Cart } from '../cart/cart';
 import { ProductCard } from '../product-card/product-card';
 import { Product } from '../models/product';
 import { catalog } from '../catalog';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [ProductCard],
+  imports: [ProductCard, RouterLink],
   selector: 'app-product-list',
   styleUrl: './product-list.css',
   templateUrl: './product-list.html',

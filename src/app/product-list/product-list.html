@@ -13,6 +13,7 @@
           [quantity]="quantityOf(product)"
           (addedToCart)="onAddedToCart($event)"
         />
+        <a [routerLink]="['/products', product.id]">Voir le détail de {{ product.title }}</a>
       </li>
     } @empty {
       <li>Aucun produit à afficher</li>

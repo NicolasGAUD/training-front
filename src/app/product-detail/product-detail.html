@@ -1,0 +1,6 @@
+@if (product(); as p) {
+  <h2>{{ p.title }}</h2>
+  <p>{{ p.price }} €</p>
+} @else {
+  <h2>Produit introuvable</h2>
+}
