@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Header } from './header';
-import { Cart } from '../cart/cart';
+import { CartService } from '../cart.service';
 import { testProducts } from '../testing/products';
 import { provideRouter } from '@angular/router';
 import { routes } from '../app.routes';
@@ -8,7 +8,7 @@ import { Auth } from '../auth/auth';
 
 describe('Header', () => {
   let fixture: ComponentFixture<Header>;
-  let cart: Cart;
+  let cart: CartService;
   let auth: Auth;
 
   const text = (): string => (fixture.nativeElement as HTMLElement).textContent ?? '';
@@ -19,7 +19,7 @@ describe('Header', () => {
       providers: [provideRouter(routes)],
     }).compileComponents();
 
-    cart = TestBed.inject(Cart);
+    cart = TestBed.inject(CartService);
     auth = TestBed.inject(Auth);
     fixture = TestBed.createComponent(Header);
     await fixture.whenStable();

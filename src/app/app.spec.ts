@@ -6,7 +6,7 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { App } from './app';
 import { routes } from './app.routes';
-import { Cart } from './cart/cart';
+import { CartService } from './cart.service';
 
 describe('App', () => {
   let http: HttpTestingController;
@@ -70,9 +70,23 @@ describe('App', () => {
     await harness.navigateByUrl('/');
     flushProducts();
     await fixture.whenStable();
-    const cart = TestBed.inject(Cart);
+    const cart = TestBed.inject(CartService);
     const el: HTMLElement = harness.routeNativeElement as HTMLElement;
     el.querySelector<HTMLButtonElement>('app-product-card button:not([disabled])')?.click();
     expect(cart.items().length).toBe(1);
+  });
+
+  it('shares the cart: clicking add in the list updates the header counter', async () => {
+    const fixture = TestBed.createComponent(App);
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/');
+    flushProducts();
+    await fixture.whenStable();
+    const header: HTMLElement = fixture.nativeElement;
+    expect(header.querySelector('app-header')?.textContent).toContain('0 article(s)');
+    const el: HTMLElement = harness.routeNativeElement as HTMLElement;
+    el.querySelector<HTMLButtonElement>('app-product-card button:not([disabled])')?.click();
+    await fixture.whenStable();
+    expect(header.querySelector('app-header')?.textContent).toContain('1 article(s)');
   });
 });

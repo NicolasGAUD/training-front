@@ -1,7 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { booleanAttribute, Component, input, output } from '@angular/core';
 import { Product } from '../models/product';
-import { CartService } from '../cart.service';
 
 @Component({
   imports: [NgOptimizedImage],
@@ -14,7 +13,6 @@ export class ProductCard {
   readonly quantity = input.required<number>();
   readonly priority = input(false, { transform: booleanAttribute });
   readonly addedToCart = output<Product>();
-  cartService = new CartService();
 
   addToCart(): void {
     this.addedToCart.emit(this.product());

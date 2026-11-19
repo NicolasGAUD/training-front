@@ -3,12 +3,12 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { ProductList } from './product-list';
-import { Cart } from '../cart/cart';
+import { CartService } from '../cart.service';
 import { dummyJsonListBody, testProducts } from '../testing/products';
 
 describe('ProductList', () => {
   let fixture: ComponentFixture<ProductList>;
-  let cart: Cart;
+  let cart: CartService;
   let http: HttpTestingController;
 
   const el = (): HTMLElement => fixture.nativeElement;
@@ -20,7 +20,7 @@ describe('ProductList', () => {
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
-    cart = TestBed.inject(Cart);
+    cart = TestBed.inject(CartService);
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ProductList);
     fixture.detectChanges();
