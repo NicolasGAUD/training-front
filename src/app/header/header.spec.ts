@@ -55,6 +55,20 @@ describe('Header', () => {
     expect(nav?.textContent).toContain('Mon compte');
   });
 
+  it('shows the "Ajouter un produit" link only when logged in', async () => {
+    const link = (): HTMLAnchorElement | null =>
+      (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+        'nav a[href="/products/new"]',
+      );
+    expect(link()).toBeNull();
+    auth.login('Alice');
+    await fixture.whenStable();
+    expect(link()?.textContent).toContain('Ajouter un produit');
+    auth.logout();
+    await fixture.whenStable();
+    expect(link()).toBeNull();
+  });
+
   it('clears the cart when the button is clicked', async () => {
     cart.add(testProducts[0]);
     await fixture.whenStable();

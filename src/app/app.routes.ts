@@ -6,6 +6,11 @@ import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: Home }, // l'adresse vide : localhost:4200/
+  {
+    path: 'products/new',
+    loadComponent: () => import('./product-form/product-form').then((m) => m.ProductForm),
+    canActivate: [authGuard],
+  },
   { path: 'products/:id', component: ProductDetail },
   { path: 'login', loadComponent: () => import('./auth/login/login').then((m) => m.Login) },
   {

@@ -112,6 +112,48 @@ export function parseProductList(raw: unknown): Product[] {
   return raw.products.map(toProduct);
 }
 
+/**
+ * Réponse de POST /products/add : DummyJSON renvoie l'id et les champs envoyés,
+ * mais ni miniature ni note (d'où un guard dédié).
+ */
+export type DummyJsonAddedProduct = {
+  id: number;
+  title: string;
+  price: number;
+  category: string;
+  stock?: number;
+  description?: string;
+};
+
+export function isDummyJsonAddedProduct(value: unknown): value is DummyJsonAddedProduct {
+  return (
+    isRecord(value) &&
+    typeof value['id'] === 'number' &&
+    typeof value['title'] === 'string' &&
+    typeof value['price'] === 'number' &&
+    typeof value['category'] === 'string' &&
+    (value['stock'] === undefined || typeof value['stock'] === 'number') &&
+    (value['description'] === undefined || typeof value['description'] === 'string')
+  );
+}
+
+/** Valide (type guard) puis convertit la réponse brute de l'ajout d'un produit. */
+export function parseAddedProduct(raw: unknown): Product {
+  if (!isDummyJsonAddedProduct(raw)) {
+    throw new Error("Réponse DummyJSON invalide : produit ajouté attendu");
+  }
+  return toProduct({
+    id: raw.id,
+    title: raw.title,
+    price: raw.price,
+    category: raw.category,
+    stock: raw.stock ?? 0,
+    description: raw.description ?? '',
+    thumbnail: '',
+    rating: 0,
+  });
+}
+
 /** Valide (type guard) puis convertit la réponse brute d'un produit. */
 export function parseProduct(raw: unknown): Product {
   if (!isDummyJsonProduct(raw)) {
