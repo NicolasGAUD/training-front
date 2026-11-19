@@ -1,48 +1,83 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { ProductList } from './product-list';
-import { catalog } from '../catalog';
 import { Cart } from '../cart/cart';
+import { dummyJsonListBody, testProducts } from '../testing/products';
 
 describe('ProductList', () => {
   let fixture: ComponentFixture<ProductList>;
   let cart: Cart;
+  let http: HttpTestingController;
+
+  const el = (): HTMLElement => fixture.nativeElement;
+  const listRequest = () => http.expectOne((req) => req.url.startsWith('https://dummyjson.com/products?'));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProductList],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     cart = TestBed.inject(Cart);
+    http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ProductList);
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
+
+  afterEach(() => http.verify());
+
+  const loadProducts = async (): Promise<void> => {
+    listRequest().flush(dummyJsonListBody());
+    await fixture.whenStable();
+  };
 
   it('should create', () => {
     expect(fixture.componentInstance).toBeTruthy();
+    listRequest();
   });
 
-  it('renders one app-product-card per product in catalog', () => {
-    const cards = (fixture.nativeElement as HTMLElement).querySelectorAll('app-product-card');
-    expect(cards.length).toBe(catalog.length);
+  it('shows a loading status while the request is pending', () => {
+    listRequest();
+    expect(el().querySelector('[role="status"]')?.textContent).toContain('Chargement');
+    expect(el().querySelectorAll('app-product-card').length).toBe(0);
   });
 
-  it('adds the product to the cart when an enabled add button is clicked', () => {
-    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-      'app-product-card button:not([disabled])',
-    );
+  it('shows an alert when the request fails', async () => {
+    listRequest().flush('erreur', { status: 500, statusText: 'Server Error' });
+    await fixture.whenStable();
+    expect(el().querySelector('[role="alert"]')?.textContent).toContain('Impossible de charger');
+    expect(el().querySelectorAll('app-product-card').length).toBe(0);
+  });
+
+  it('shows an alert when the response is invalid', async () => {
+    listRequest().flush({ products: [{ id: 'x' }] });
+    await fixture.whenStable();
+    expect(el().querySelector('[role="alert"]')).not.toBeNull();
+  });
+
+  it('renders one app-product-card per product', async () => {
+    await loadProducts();
+    expect(el().querySelectorAll('app-product-card').length).toBe(testProducts.length);
+    expect(el().querySelector('[role="status"]')).toBeNull();
+  });
+
+  it('adds the product to the cart when an enabled add button is clicked', async () => {
+    await loadProducts();
+    const button = el().querySelector<HTMLButtonElement>('app-product-card button:not([disabled])');
     expect(button).not.toBeNull();
     button?.click();
 
-    expect(cart.items()).toEqual(catalog.filter((p) => p.stock > 0).slice(0, 1));
+    expect(cart.items()).toEqual(testProducts.filter((p) => p.stock > 0).slice(0, 1));
   });
 
   it('passes the quantity in the cart to each card', async () => {
-    cart.add(catalog[0]);
-    cart.add(catalog[0]);
+    await loadProducts();
+    cart.add(testProducts[0]);
+    cart.add(testProducts[0]);
     await fixture.whenStable();
-    const cards = (fixture.nativeElement as HTMLElement).querySelectorAll('app-product-card');
+    const cards = el().querySelectorAll('app-product-card');
     cards.forEach((card, index) => {
       const expected = index === 0 ? 2 : 0;
       expect(card.textContent).toContain(`Dans ton panier : ${expected}`);
@@ -50,63 +85,45 @@ describe('ProductList', () => {
   });
 
   describe('filters', () => {
-    const cardCount = (): number =>
-      (fixture.nativeElement as HTMLElement).querySelectorAll('app-product-card').length;
+    const cardCount = (): number => el().querySelectorAll('app-product-card').length;
 
     const clickFilter = async (label: string): Promise<void> => {
-      const buttons = Array.from(
-        (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
-          '[role="group"] button',
-        ),
-      );
+      const buttons = Array.from(el().querySelectorAll<HTMLButtonElement>('[role="group"] button'));
       const button = buttons.find((b) => b.textContent?.trim() === label);
       expect(button).toBeDefined();
       button?.click();
       await fixture.whenStable();
     };
 
+    beforeEach(async () => {
+      await loadProducts();
+    });
+
     it('shows only in-stock products when clicking "Disponibles"', async () => {
       await clickFilter('Disponibles');
-      expect(cardCount()).toBe(catalog.filter((p) => p.stock > 0).length);
+      expect(cardCount()).toBe(testProducts.filter((p) => p.stock > 0).length);
     });
 
     it('shows only products above 1000 when clicking "Plus de 1 000 €"', async () => {
       await clickFilter('Plus de 1 000 €');
-      expect(cardCount()).toBe(catalog.filter((p) => p.price > 1000).length);
+      expect(cardCount()).toBe(testProducts.filter((p) => p.price > 1000).length);
     });
 
-    const emptyMessage = (): HTMLElement | null =>
-      Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('ul > li')).find(
-        (li) => li.textContent?.trim() === 'Aucun produit à afficher',
-      ) ?? null;
-
     it('renders one li containing an app-product-card per product on initial render', () => {
-      const items = (fixture.nativeElement as HTMLElement).querySelectorAll('ul > li');
-      expect(items.length).toBe(catalog.length);
+      const items = el().querySelectorAll('ul > li');
+      expect(items.length).toBe(testProducts.length);
       items.forEach((li) => expect(li.querySelector('app-product-card')).not.toBeNull());
     });
 
     it('does not show the empty message on initial render', () => {
-      expect(cardCount()).toBe(catalog.length);
-      expect(emptyMessage()).toBeNull();
-      expect(fixture.nativeElement.textContent).not.toContain('Aucun produit à afficher');
-    });
-
-    it('shows the empty message only when the "Plus de 1 000 €" filter matches nothing', async () => {
-      await clickFilter('Plus de 1 000 €');
-      const expected = catalog.filter((p) => p.price > 1000).length;
-      expect(cardCount()).toBe(expected);
-      if (expected === 0) {
-        expect(emptyMessage()?.textContent?.trim()).toBe('Aucun produit à afficher');
-      } else {
-        expect(emptyMessage()).toBeNull();
-      }
+      expect(cardCount()).toBe(testProducts.length);
+      expect(el().textContent).not.toContain('Aucun produit à afficher');
     });
 
     it('shows all products when clicking "Tous" after a filter', async () => {
       await clickFilter('Disponibles');
       await clickFilter('Tous');
-      expect(cardCount()).toBe(catalog.length);
+      expect(cardCount()).toBe(testProducts.length);
     });
   });
 });

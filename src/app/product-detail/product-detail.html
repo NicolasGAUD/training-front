@@ -1,6 +1,16 @@
-@if (product(); as p) {
-  <h2>{{ p.title }}</h2>
-  <p>{{ p.price }} €</p>
+@if (loading()) {
+  <p role="status">Chargement du produit…</p>
+} @else if (product(); as p) {
+  <div class="product-detail">
+    <img [ngSrc]="p.thumbnail" [alt]="p.title" width="160" height="160" />
+    <div>
+      <h2>{{ p.title }}</h2>
+      <p>{{ p.price }} €</p>
+      <p>{{ p.description }}</p>
+    </div>
+  </div>
+} @else if (failed()) {
+  <p role="alert">Impossible de charger le produit. Réessaie plus tard.</p>
 } @else {
   <h2>Produit introuvable</h2>
 }

@@ -1,0 +1,99 @@
+<h2>Ajouter un produit</h2>
+<p>Les champs marqués d'un <span class="required-mark" aria-hidden="true">*</span> sont obligatoires.</p>
+
+<div role="status">
+  @if (addedProduct(); as added) {
+    <p class="success">Produit "{{ added.title }}" ajouté (id {{ added.id }}) — simulé par DummyJSON</p>
+  }
+  @if (sending()) {
+    <p>Envoi en cours…</p>
+  }
+</div>
+@if (failed()) {
+  <p class="error" role="alert">
+    L'ajout du produit a échoué. Vos saisies sont conservées, veuillez réessayer.
+  </p>
+}
+
+<form (submit)="onSubmit($event)" novalidate [attr.aria-busy]="sending()">
+  @let titleError = errorOf(productForm.title);
+  <label for="product-title">Titre <span class="required-mark" aria-hidden="true">*</span></label>
+  <input
+    id="product-title"
+    type="text"
+    aria-required="true"
+    [formField]="productForm.title"
+    [attr.aria-invalid]="titleError ? 'true' : null"
+    [attr.aria-describedby]="titleError ? 'product-title-error' : null"
+  />
+  @if (titleError) {
+    <p id="product-title-error" class="error">{{ titleError }}</p>
+  }
+
+  @let priceError = errorOf(productForm.price);
+  <label for="product-price">Prix (€) <span class="required-mark" aria-hidden="true">*</span></label>
+  <input
+    id="product-price"
+    type="number"
+    step="any"
+    inputmode="decimal"
+    aria-required="true"
+    [formField]="productForm.price"
+    [attr.aria-invalid]="priceError ? 'true' : null"
+    [attr.aria-describedby]="priceError ? 'product-price-error' : null"
+  />
+  @if (priceError) {
+    <p id="product-price-error" class="error">{{ priceError }}</p>
+  }
+
+  @let stockError = errorOf(productForm.stock);
+  <label for="product-stock">Stock <span class="required-mark" aria-hidden="true">*</span></label>
+  <input
+    id="product-stock"
+    type="number"
+    step="any"
+    inputmode="numeric"
+    aria-required="true"
+    [formField]="productForm.stock"
+    [attr.aria-invalid]="stockError ? 'true' : null"
+    [attr.aria-describedby]="stockError ? 'product-stock-error' : null"
+  />
+  @if (stockError) {
+    <p id="product-stock-error" class="error">{{ stockError }}</p>
+  }
+
+  @let categoryError = errorOf(productForm.category);
+  <label for="product-category"
+    >Catégorie <span class="required-mark" aria-hidden="true">*</span></label
+  >
+  <select
+    id="product-category"
+    aria-required="true"
+    [formField]="productForm.category"
+    [attr.aria-invalid]="categoryError ? 'true' : null"
+    [attr.aria-describedby]="categoryError ? 'product-category-error' : null"
+  >
+    <option value="">Choisir une catégorie</option>
+    @for (category of categories; track category) {
+      <option [value]="category">{{ category }}</option>
+    }
+  </select>
+  @if (categoryError) {
+    <p id="product-category-error" class="error">{{ categoryError }}</p>
+  }
+
+  @let descriptionError = errorOf(productForm.description);
+  <label for="product-description">Description (facultative, 500 caractères maximum)</label>
+  <textarea
+    id="product-description"
+    rows="4"
+    [formField]="productForm.description"
+    [attr.aria-invalid]="descriptionError ? 'true' : null"
+    [attr.aria-describedby]="descriptionError ? 'product-description-error' : null"
+  ></textarea>
+  @if (descriptionError) {
+    <p id="product-description-error" class="error">{{ descriptionError }}</p>
+  }
+
+  <button type="submit" [disabled]="sending()">Ajouter le produit</button>
+</form>

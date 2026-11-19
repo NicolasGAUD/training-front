@@ -1,6 +1,7 @@
-import { Product } from './models/product';
+import { Product } from '../models/product';
 
-export const catalog: Product[] = [
+/** Produits de test (au format de l'application). */
+export const testProducts: Product[] = [
   {
     id: 1,
     title: 'Essence Mascara Lash Princess',
@@ -9,33 +10,21 @@ export const catalog: Product[] = [
       'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
     stock: 99,
     availabilityStatus: 'In Stock',
-  },
-  {
-    id: 9,
-    title: 'Dolce Shine Eau de',
-    price: 69.99,
-    thumbnail:
-      'https://cdn.dummyjson.com/product-images/fragrances/dolce-shine-eau-de/thumbnail.webp',
-    stock: 4,
-    availabilityStatus: 'Low Stock',
+    description: 'Mascara volumisant.',
+    category: 'beauty',
+    rating: 4.9,
   },
   {
     id: 15,
     title: 'Wooden Bathroom Sink With Mirror',
-    price: 799.99,
+    price: 1799.99,
     thumbnail:
       'https://cdn.dummyjson.com/product-images/furniture/wooden-bathroom-sink-with-mirror/thumbnail.webp',
     stock: 7,
     availabilityStatus: 'Low Stock',
-  },
-  {
-    id: 26,
-    title: 'Green Chili Pepper',
-    price: 0.99,
-    thumbnail:
-      'https://cdn.dummyjson.com/product-images/groceries/green-chili-pepper/thumbnail.webp',
-    stock: 3,
-    availabilityStatus: 'Low Stock',
+    description: 'Lavabo en bois.',
+    category: 'furniture',
+    rating: 4.2,
   },
   {
     id: 153,
@@ -45,5 +34,13 @@ export const catalog: Product[] = [
       'https://cdn.dummyjson.com/product-images/sports-accessories/volleyball/thumbnail.webp',
     stock: 0,
     availabilityStatus: 'Out of Stock',
+    description: 'Ballon de volley.',
+    category: 'sports-accessories',
+    rating: 3.8,
   },
 ];
+
+/** Corps JSON au format DummyJSON pour la liste (pour HttpTestingController). */
+export function dummyJsonListBody(): object {
+  return { products: testProducts, total: testProducts.length, skip: 0, limit: 30 };
+}

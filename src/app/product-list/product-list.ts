@@ -1,9 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Cart } from '../cart/cart';
+import { ProductCatalog } from '../catalog/product-catalog';
 import { ProductCard } from '../product-card/product-card';
 import { Product } from '../models/product';
-import { catalog } from '../catalog';
 import { RouterLink } from '@angular/router';
+
+type Filter = 'all' | 'inStock' | 'luxury';
 
 @Component({
   imports: [ProductCard, RouterLink],
@@ -12,9 +14,25 @@ import { RouterLink } from '@angular/router';
   templateUrl: './product-list.html',
 })
 export class ProductList {
-  products: Product[] = catalog;
-  visibleProducts: Product[] = catalog;
+  private readonly catalog = inject(ProductCatalog);
   private readonly cart = inject(Cart);
+  private readonly filter = signal<Filter>('all');
+
+  readonly loading = this.catalog.products.isLoading;
+  readonly failed = computed(() => this.catalog.products.error() !== undefined);
+  readonly products = computed<Product[]>(() =>
+    this.catalog.products.hasValue() ? (this.catalog.products.value() ?? []) : [],
+  );
+  readonly visibleProducts = computed(() => {
+    switch (this.filter()) {
+      case 'inStock':
+        return this.products().filter((product) => product.stock > 0);
+      case 'luxury':
+        return this.products().filter((product) => product.price > 1000);
+      default:
+        return this.products();
+    }
+  });
 
   onAddedToCart(product: Product): void {
     this.cart.add(product);
@@ -25,14 +43,14 @@ export class ProductList {
   }
 
   showAll(): void {
-    this.visibleProducts = this.products;
+    this.filter.set('all');
   }
 
   showInStock(): void {
-    this.visibleProducts = this.products.filter((product) => product.stock > 0);
+    this.filter.set('inStock');
   }
 
   showLuxury(): void {
-    this.visibleProducts = this.products.filter((product) => product.price > 1000);
+    this.filter.set('luxury');
   }
 }
