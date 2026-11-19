@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Cart } from '../cart/cart';
+import { RouterLink } from '@angular/router';
 
 @Component({
   imports: [],

@@ -3,3 +3,8 @@
   background-color: #b03a3a;
   color: white;
 }
+
+.header a {
+  margin-right: 16px;
+  color: white;
+}
