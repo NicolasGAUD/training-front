@@ -18,4 +18,10 @@ describe('Home', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('renders the welcome message and the product list', () => {
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.textContent).toContain('Bienvenue');
+    expect(el.querySelector('app-product-list')).not.toBeNull();
+  });
 });

@@ -1,4 +1,5 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Cart } from '../cart/cart';
 import { ProductCard } from '../product-card/product-card';
 import { Product } from '../models/product';
 import { catalog } from '../catalog';
@@ -12,15 +13,14 @@ import { catalog } from '../catalog';
 export class ProductList {
   products: Product[] = catalog;
   visibleProducts: Product[] = catalog;
-  readonly cart = input.required<Product[]>();
-  readonly addToCart = output<Product>();
+  private readonly cart = inject(Cart);
 
   onAddedToCart(product: Product): void {
-    this.addToCart.emit(product);
+    this.cart.add(product);
   }
 
   quantityOf(product: Product): number {
-    return this.cart().filter((item) => item.id === product.id).length;
+    return this.cart.items().filter((item) => item.id === product.id).length;
   }
 
   showAll(): void {
