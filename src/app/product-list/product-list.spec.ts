@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductList } from './product-list';
 import { catalog } from '../catalog';
-import { Product } from '../models/product';
+import { Cart } from '../cart/cart';
 
 describe('ProductList', () => {
   let fixture: ComponentFixture<ProductList>;
+  let cart: Cart;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProductList],
     }).compileComponents();
 
+    cart = TestBed.inject(Cart);
     fixture = TestBed.createComponent(ProductList);
-    fixture.componentRef.setInput('cart', []);
     await fixture.whenStable();
   });
 
@@ -25,22 +26,19 @@ describe('ProductList', () => {
     expect(cards.length).toBe(catalog.length);
   });
 
-  it('emits addToCart with the product when an enabled add button is clicked', async () => {
-    const emitted: Product[] = [];
-    fixture.componentInstance.addToCart.subscribe((p) => emitted.push(p));
-
+  it('adds the product to the cart when an enabled add button is clicked', () => {
     const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
       'app-product-card button:not([disabled])',
     );
     expect(button).not.toBeNull();
     button?.click();
 
-    const firstInStock = catalog.find((p) => p.stock > 0);
-    expect(emitted).toEqual([firstInStock as Product]);
+    expect(cart.items()).toEqual(catalog.filter((p) => p.stock > 0).slice(0, 1));
   });
 
   it('passes the quantity in the cart to each card', async () => {
-    fixture.componentRef.setInput('cart', [catalog[0], catalog[0]]);
+    cart.add(catalog[0]);
+    cart.add(catalog[0]);
     await fixture.whenStable();
     const cards = (fixture.nativeElement as HTMLElement).querySelectorAll('app-product-card');
     cards.forEach((card, index) => {

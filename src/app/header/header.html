@@ -3,5 +3,5 @@
   <p>Le catalogue d'entraînement</p>
   <p>🛒 {{ count() }} article(s) · {{ total().toFixed(2) }} €</p>
   <p>{{ shipping() }}</p>
-  <button type="button" (click)="clear.emit()">Vider le panier</button>
+  <button type="button" (click)="onClear()">Vider le panier</button>
 </header>

@@ -1,5 +1,6 @@
-import { Component, computed, input, output, signal } from '@angular/core';
-import { Product } from '../models/product';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Cart } from '../cart/cart';
+import { RouterLink } from '@angular/router';
 
 @Component({
   imports: [],
@@ -8,8 +9,7 @@ import { Product } from '../models/product';
   templateUrl: './header.html',
 })
 export class Header {
-  cart = input.required<Product[]>(); // remplace count
-  clear = output<void>(); // void : l'événement ne transporte rien
+  private readonly cart = inject(Cart);
   shipping = signal('Calcul des frais de port…'); // un signal, avec sa valeur de départ
   constructor() {
     setTimeout(() => {
@@ -17,6 +17,10 @@ export class Header {
     }, 2000);
   }
 
-  count = computed(() => this.cart().length); // se recalcule quand cart change
-  total = computed(() => this.cart().reduce((sum, product) => sum + product.price, 0));
+  count = computed(() => this.cart.items().length); // se recalcule quand le panier change
+  total = computed(() => this.cart.items().reduce((sum, product) => sum + product.price, 0));
+
+  onClear(): void {
+    this.cart.clear();
+  }
 }

@@ -1,36 +1,43 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Header } from './header';
+import { Cart } from '../cart/cart';
+import { catalog } from '../catalog';
 
 describe('Header', () => {
-  let component: Header;
   let fixture: ComponentFixture<Header>;
+  let cart: Cart;
+
+  const text = (): string => (fixture.nativeElement as HTMLElement).textContent ?? '';
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Header],
     }).compileComponents();
 
+    cart = TestBed.inject(Cart);
     fixture = TestBed.createComponent(Header);
-    component = fixture.componentInstance;
-    fixture.componentRef.setInput('count', 0);
     await fixture.whenStable();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('displays the cart count', async () => {
-    fixture.componentRef.setInput('count', 3);
+  it('displays the cart count and total', async () => {
+    expect(text()).toContain('0 article(s)');
+    cart.add(catalog[0]);
+    cart.add(catalog[0]);
     await fixture.whenStable();
-    const counter = (fixture.nativeElement as HTMLElement).querySelector('p[aria-live="polite"]');
-    expect(counter?.textContent).toContain('Panier : 3 article(s)');
+    expect(text()).toContain('2 article(s)');
+    expect(text()).toContain(`${(catalog[0].price * 2).toFixed(2)} €`);
   });
 
-  it('emits clear when the button is clicked', () => {
-    let emitted = 0;
-    component.clear.subscribe(() => emitted++);
+  it('clears the cart when the button is clicked', async () => {
+    cart.add(catalog[0]);
+    await fixture.whenStable();
     (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button')?.click();
-    expect(emitted).toBe(1);
+    await fixture.whenStable();
+    expect(cart.items()).toEqual([]);
+    expect(text()).toContain('0 article(s)');
   });
 });
