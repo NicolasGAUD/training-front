@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { Cart } from '../cart/cart';
+import { Component, inject, signal } from '@angular/core';
 import { Auth } from '../auth/auth';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CartService } from '../cart.service';
@@ -11,9 +10,8 @@ import { CartService } from '../cart.service';
   templateUrl: './header.html',
 })
 export class Header {
-  private readonly cart = inject(Cart);
+  private readonly cart = inject(CartService);
   protected readonly auth = inject(Auth);
-  cartService = new CartService();
   shipping = signal('Calcul des frais de port…'); // un signal, avec sa valeur de départ
   constructor() {
     setTimeout(() => {
@@ -21,8 +19,8 @@ export class Header {
     }, 2000);
   }
 
-  count = computed(() => this.cart.items().length); // se recalcule quand le panier change
-  total = computed(() => this.cart.items().reduce((sum, product) => sum + product.price, 0));
+  count = this.cart.count; // calculé par le service, partagé avec toute l'appli
+  total = this.cart.total;
 
   onClear(): void {
     this.cart.clear();

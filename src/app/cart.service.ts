@@ -1,24 +1,20 @@
-// src/app/cart.service.ts
 import { Service, computed, signal } from '@angular/core';
 import { Product } from './models/product';
 
 @Service()
 export class CartService {
-  constructor() {
-    console.log("🛒 Un panier vient d'être fabriqué");
-  }
-  
-  private readonly items = signal<Product[]>([]); // le panier : seul le service y touche
+  private readonly _items = signal<Product[]>([]); // le panier : seul le service y touche
+  readonly items = this._items.asReadonly(); // les autres le lisent, sans pouvoir le modifier
 
   readonly count = computed(() => this.items().length);
   readonly total = computed(() => this.items().reduce((sum, product) => sum + product.price, 0));
 
   add(product: Product): void {
-    this.items.update((items) => [...items, product]); // un nouveau tableau, comme toujours
+    this._items.update((items) => [...items, product]); // un nouveau tableau, comme toujours
   }
 
   clear(): void {
-    this.items.set([]);
+    this._items.set([]);
   }
 
   quantityOf(product: Product): number {

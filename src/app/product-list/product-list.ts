@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Cart } from '../cart/cart';
+import { CartService } from '../cart.service';
 import { ProductCatalog } from '../catalog/product-catalog';
 import { ProductCard } from '../product-card/product-card';
 import { Product } from '../models/product';
@@ -15,7 +15,7 @@ type Filter = 'all' | 'inStock' | 'luxury';
 })
 export class ProductList {
   private readonly catalog = inject(ProductCatalog);
-  private readonly cart = inject(Cart);
+  private readonly cart = inject(CartService);
   private readonly filter = signal<Filter>('all');
 
   readonly loading = this.catalog.products.isLoading;
@@ -39,7 +39,7 @@ export class ProductList {
   }
 
   quantityOf(product: Product): number {
-    return this.cart.items().filter((item) => item.id === product.id).length;
+    return this.cart.quantityOf(product);
   }
 
   showAll(): void {
