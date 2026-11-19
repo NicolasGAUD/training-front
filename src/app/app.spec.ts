@@ -1,4 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { dummyJsonListBody } from './testing/products';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { App } from './app';
@@ -6,12 +9,23 @@ import { routes } from './app.routes';
 import { Cart } from './cart/cart';
 
 describe('App', () => {
+  let http: HttpTestingController;
+
+  const flushProducts = (): void => {
+    http
+      .expectOne((req) => req.url.startsWith('https://dummyjson.com/products?'))
+      .flush(dummyJsonListBody());
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter(routes)],
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
+    http = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => http.verify());
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
@@ -36,6 +50,7 @@ describe('App', () => {
   it('shows the product list on the home route only', async () => {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/');
+    flushProducts();
     expect(harness.routeNativeElement?.querySelector('app-product-list')).not.toBeNull();
     await harness.navigateByUrl('/inconnue');
     expect(harness.routeNativeElement?.querySelector('app-product-list')).toBeNull();
@@ -46,6 +61,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/');
+    flushProducts();
     await fixture.whenStable();
     const cart = TestBed.inject(Cart);
     const el: HTMLElement = harness.routeNativeElement as HTMLElement;

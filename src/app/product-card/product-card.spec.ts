@@ -1,15 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductCard } from './product-card';
 import { Product } from '../models/product';
+import { testProducts } from '../testing/products';
 
-const product: Product = {
-  id: 1,
-  title: 'Volleyball',
-  price: 11.99,
-  thumbnail: 'https://cdn.dummyjson.com/product-images/sports-accessories/volleyball/thumbnail.webp',
-  stock: 0,
-  availabilityStatus: 'Out of Stock',
-};
+const product: Product = testProducts[2]; // Volleyball, en rupture
 
 describe('ProductCard', () => {
   let fixture: ComponentFixture<ProductCard>;
