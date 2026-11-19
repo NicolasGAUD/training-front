@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { dummyJsonListBody } from './testing/products';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { App } from './app';
 import { routes } from './app.routes';
@@ -55,6 +55,13 @@ describe('App', () => {
     await harness.navigateByUrl('/inconnue');
     expect(harness.routeNativeElement?.querySelector('app-product-list')).toBeNull();
     expect(harness.routeNativeElement?.textContent).toContain("Cette page n'existe pas");
+  });
+
+  it('redirects /account to /login when logged out', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/account');
+    expect(TestBed.inject(Router).url).toBe('/login?returnUrl=%2Faccount');
+    expect(harness.routeNativeElement?.textContent).toContain('Connexion');
   });
 
   it('adds a product to the cart then clears it', async () => {

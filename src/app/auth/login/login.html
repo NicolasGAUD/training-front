@@ -1,0 +1,16 @@
+<h2>Connexion</h2>
+<form (submit)="onSubmit($event)" novalidate>
+  <label for="login-name">Nom</label>
+  <input
+    id="login-name"
+    type="text"
+    autocomplete="username"
+    [formField]="loginForm.name"
+    [attr.aria-invalid]="showError() ? 'true' : null"
+    [attr.aria-describedby]="showError() ? 'login-name-error' : null"
+  />
+  @if (showError()) {
+    <p id="login-name-error" class="error" role="alert">Le nom est obligatoire</p>
+  }
+  <button type="submit">Se connecter</button>
+</form>
